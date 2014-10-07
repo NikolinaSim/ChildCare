@@ -1,10 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+package mk.ukim.finki.os.synchronization.problems.ChildCare;
 
-package childcareproblem_testing;
+import mk.ukim.finki.os.synchronization.AbstractState;
+import mk.ukim.finki.os.synchronization.BoundCounterWithRaceConditionCheck;
+import mk.ukim.finki.os.synchronization.PointsException;
+import mk.ukim.finki.os.synchronization.Switcher;
+
 
 import static java.lang.Integer.max;
 
@@ -14,7 +14,7 @@ import static java.lang.Integer.max;
  */
 
 public class ChildCareState extends AbstractState {
-    
+
 	private static final String ADULTS_LEAVING_DEADLOCK
                 = "Adult leaving deadlock... Adults should be able to leave when numberOfChildren <= 3 * (numberOfAdults - 1).";
 	private static final String CHILDREN_ENTERING_DEADLOCK
@@ -25,18 +25,18 @@ public class ChildCareState extends AbstractState {
 
         private int adults;
         private int children;
-    
+
         public int adultsLeaving;
         public int childrenEntering;
 
 	public ChildCareState() {
             adults = 0;
             children = 0;
-            
+
             adultsLeaving = 0;
             childrenEntering = 0;
 	}
-        
+
         public void adultEntered() {
             synchronized (this) {
                 //System.out.println("Adult entered!");
@@ -44,7 +44,7 @@ public class ChildCareState extends AbstractState {
                 adults++;
             }
         }
-        
+
         public void adultLeft() {
             synchronized (this) {
                 //System.out.println("Adult left!");
@@ -54,7 +54,7 @@ public class ChildCareState extends AbstractState {
                 adults--;
             }
         }
-        
+
         public void adultLeaving() {
             synchronized (this) {
                 //System.out.println("Adult leaving...");
@@ -67,7 +67,7 @@ public class ChildCareState extends AbstractState {
                 }
             }
         }
-        
+
 	public void childrenEntered(int n) {
             synchronized (this) {
                 //System.out.println(n == 1 ? "Child entered!" : (n + " children entered!"));
@@ -77,7 +77,7 @@ public class ChildCareState extends AbstractState {
 		children += n;
             }
 	}
-        
+
         public void childLeft() {
             synchronized (this) {
                 //System.out.println("Child left!");
@@ -85,7 +85,7 @@ public class ChildCareState extends AbstractState {
                 children--;
             }
         }
-        
+
         public void childEntering() {
             synchronized (this) {
                 //System.out.println("Child entering...");
@@ -102,7 +102,7 @@ public class ChildCareState extends AbstractState {
 	public void reset() {
             adults = 0;
             children = 0;
-            
+
             adultsLeaving = 0;
             childrenEntering = 0;
 	}

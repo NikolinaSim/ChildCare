@@ -1,14 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package childcareproblem_testing;
+package mk.ukim.finki.os.synchronization.problems.ChildCare;
 
 import static java.lang.Integer.min;
 import java.util.HashSet;
 import java.util.concurrent.Semaphore;
+
+import mk.ukim.finki.os.synchronization.ProblemExecution;
+import mk.ukim.finki.os.synchronization.TemplateThread;
 
 /**
  *
@@ -19,27 +16,27 @@ import java.util.concurrent.Semaphore;
 public class ChildCareSolution_Synchronized {
     public static int adults;
     public static int children;
-    
+
     public static Semaphore adultQueue;
     public static Semaphore childQueue;
-    
+
     public static Semaphore mutex;
-    
-    
-    
+
+
+
     public static void init()
     {
         adults = 0;
         children = 0;
-                
+
         adultQueue = new Semaphore(0);
         childQueue = new Semaphore(0);
-        
+
         mutex = new Semaphore(1);
     }
-    
-    
-    
+
+
+
     // Нитка за воспитувач.
     public static class Adult extends TemplateThread
     {
@@ -47,12 +44,12 @@ public class ChildCareSolution_Synchronized {
         {
             super(numberOfRuns);
         }
-        
+
         @Override
 	public void execute() throws InterruptedException {
             // Код за влегување на воспитувачот.
             mutex.acquire();
-            
+
             // Воспитувачот влегува - не вршиме проверки, воспитувачот може
             // да влезе било кога.
             state.adultEntered();
@@ -68,14 +65,14 @@ public class ChildCareSolution_Synchronized {
                 childQueue.release(n);
                 children += n;
             }
-            
+
             mutex.release();
-            
+
             // Критичен регион.
-            
+
             // Код за излегување на воспитувачот.
             mutex.acquire();
-            
+
             // Ако има доволно воспитувачи за да ги чуваат децата...
             if(children <= 3 * (adults - 1))
             {
@@ -95,9 +92,9 @@ public class ChildCareSolution_Synchronized {
             }
 	}
     }
-    
-    
-    
+
+
+
     // Нитка за дете.
     public static class Child extends TemplateThread
     {
@@ -105,12 +102,12 @@ public class ChildCareSolution_Synchronized {
         {
             super(numberOfRuns);
         }
-        
+
         @Override
 	public void execute() throws InterruptedException {
             // Код за влегување на детето.
             mutex.acquire();
-            
+
             // Ако има доволно воспитувачи за децата кои се внатре и детето
             // кое сака да влезе...
             if(children < 3 * adults)
@@ -129,13 +126,13 @@ public class ChildCareSolution_Synchronized {
                 state.childEntering();
                 mutex.release();
                 childQueue.acquire();
-            }            
-            
+            }
+
             // Критичен регион.
-            
+
             // Код за излегување на детето.
             mutex.acquire();
-            
+
             // Детето излегува - не вршиме проверки, детето може да излезе
             // било кога.
             state.childLeft();
@@ -150,27 +147,27 @@ public class ChildCareSolution_Synchronized {
                 adults--;
                 adultQueue.release();
             }
-            
+
             mutex.release();
 	}
     }
-    
-    
-    
+
+
+
     static ChildCareState state = new ChildCareState();
-    
-    
-    
+
+
+
     public static void main(String[] args) {
-        
+
         for (int i = 1; i <= 10; i++) {
             System.out.println("Run: " + i);
             run();
         }
     }
-        
-    
-    
+
+
+
     public static void run() {
         try {
             int numChildren = 100;

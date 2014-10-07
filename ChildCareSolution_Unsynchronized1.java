@@ -4,7 +4,11 @@
  * and open the template in the editor.
  */
 
-package childcareproblem_testing;
+package mk.ukim.finki.os.synchronization.problems.ChildCare;
+
+
+import mk.ukim.finki.os.synchronization.ProblemExecution;
+import mk.ukim.finki.os.synchronization.TemplateThread;
 
 import java.util.HashSet;
 import java.util.concurrent.Semaphore;
@@ -15,33 +19,33 @@ import java.util.concurrent.Semaphore;
  */
 
 // Несинхронизирано решение - deadlocks при излегувањето на воспитувачите и влегувањето на децата.
-public class ChildCareSolution_Unsynchronized1 {    
+public class ChildCareSolution_Unsynchronized1 {
     public static Semaphore multiplex;
-    
-    
-    
+
+
+
     public static void init()
-    {        
+    {
         multiplex = new Semaphore(3);
     }
-    
-    
-    
+
+
+
     public static class Adult extends TemplateThread
     {
         public Adult(int numberOfRuns)
         {
             super(numberOfRuns);
         }
-        
+
         @Override
 	public void execute() throws InterruptedException {
             // Adult entering.
             state.adultEntered();
             multiplex.release(3);
-            
+
             // Critical region.
-            
+
             // Adult leaving.
             state.adultLeaving();
             state.adultLeft();
@@ -50,47 +54,47 @@ public class ChildCareSolution_Unsynchronized1 {
             multiplex.acquire();
 	}
     }
-    
-    
-    
+
+
+
     public static class Child extends TemplateThread
     {
         public Child(int numberOfRuns)
         {
             super(numberOfRuns);
         }
-        
+
         @Override
 	public void execute() throws InterruptedException {
             // Child entering.
             state.childEntering();
             state.childrenEntered(1);
             multiplex.acquire();
-            
+
             // Critical region.
-            
+
             // Child leaving.
             state.childLeft();
             multiplex.release();
 	}
     }
-    
-    
-    
+
+
+
     static ChildCareState state = new ChildCareState();
-    
-    
-    
+
+
+
     public static void main(String[] args) {
-        
+
         for (int i = 1; i <= 10; i++) {
             System.out.println("Run: " + i);
             run();
         }
     }
-         
-    
-    
+
+
+
     public static void run() {
         try {
             int numChildren = 100;
